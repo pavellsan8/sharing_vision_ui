@@ -13,14 +13,16 @@ const normalizeStatusToBackend = (status) => {
   const v = String(status).toLowerCase();
   if (['published', 'publish'].includes(v)) return 'Publish';
   if (['draft', 'drafts'].includes(v)) return 'Draft';
-  if (['trashed', 'trash'].includes(v)) return 'Trash';
+  if (['trashed', 'trash'].includes(v)) return 'Thrash';
   return 'Draft';
 };
 
 export const fetchArticles = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/article/10/0`);
+    const response = await fetch(`${API_BASE_URL}/article/5/0`);
     const data = await response.json();
+    
+    console.log('API Response:', data);
 
     const grouped = {
       Published: data.filter(a => normalizeStatusToGroup(a.status) === 'Published'),
@@ -44,7 +46,7 @@ export const createArticle = async (formData, status) => {
       status: normalizeStatusToBackend(status)
     };
     
-    // console.log('Sending payload:', payload); // Debug log
+    console.log('Sending payload:', payload);
     
     const response = await fetch(`${API_BASE_URL}/article`, {
       method: 'POST',
@@ -57,7 +59,7 @@ export const createArticle = async (formData, status) => {
       console.error('Create article failed', response.status, data);
       return false;
     }
-    // console.log('Article created:', data); // Debug log
+    console.log('Article created:', data);
     return true;
   } catch (error) {
     console.error('Error creating article:', error);
@@ -67,19 +69,20 @@ export const createArticle = async (formData, status) => {
 
 export const updateArticleStatus = async (id, status) => {
   try {
-    const getRes = await fetch(`${API_BASE_URL}/article/${id}`);
-    if (!getRes.ok) {
-      console.error('Failed to fetch article before update', getRes.status);
+    if (!id) {
+      console.error('Invalid article ID:', id);
       return false;
     }
+    
+    const getRes = await fetch(`${API_BASE_URL}/article/${id}`);
     const article = await getRes.json();
 
-    const payload = { 
-      ...article, 
-      status: normalizeStatusToBackend(status) 
+    const payload = {
+      ...article,
+      status: normalizeStatusToBackend(status)
     };
     
-    // console.log('Updating article with payload:', payload); // Debug log
+    console.log('Updating article with payload:', payload);
     
     const res = await fetch(`${API_BASE_URL}/article/${id}`, {
       method: 'PUT',
@@ -92,6 +95,8 @@ export const updateArticleStatus = async (id, status) => {
       console.error('Update article status failed', res.status, data);
       return false;
     }
+
+    console.log('Article updated successfully');
     return true;
   } catch (error) {
     console.error('Error updating article status:', error);
@@ -101,9 +106,19 @@ export const updateArticleStatus = async (id, status) => {
 
 export const deleteArticle = async (id) => {
   try {
+    console.log('Deleting article ID:', id);
+    
+    if (!id) {
+      console.error('Invalid article ID:', id);
+      return false;
+    }
+    
     const response = await fetch(`${API_BASE_URL}/article/${id}`, {
       method: 'DELETE'
     });
+    
+    console.log('Delete response status:', response.status);
+    
     return response.ok;
   } catch (error) {
     console.error('Error deleting article:', error);

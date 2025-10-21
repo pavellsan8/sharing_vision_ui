@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trash2, Edit } from 'lucide-react';
+import { Trash2, Edit, XCircle } from 'lucide-react';
 
 const AllPostsPage = ({ articles, onTrash, onRefresh, onDelete }) => {
   const [activeTab, setActiveTab] = useState('Published');
@@ -12,12 +12,18 @@ const AllPostsPage = ({ articles, onTrash, onRefresh, onDelete }) => {
     console.log('Edit:', article);
   };
 
-  const handleDelete = async (article) => {
-    if (window.confirm(`Are you sure you want to delete "${article.title}"?`)) {
+  const handleTrash = async (article) => {
+    if (window.confirm(`Move "${article.title}" to trash?`)) {
+      await onTrash(article.id, activeTab);
+    }
+  };
+
+  const handlePermanentDelete = async (article) => {
+    if (window.confirm(`Permanently delete "${article.title}"? This cannot be undone!`)) {
       const success = await onDelete(article.id);
       if (success) {
-        alert('Article deleted successfully!');
-        onRefresh(); // Refresh list setelah delete
+        alert('Article permanently deleted!');
+        onRefresh();
       } else {
         alert('Failed to delete article.');
       }
@@ -91,13 +97,24 @@ const AllPostsPage = ({ articles, onTrash, onRefresh, onDelete }) => {
                       >
                         <Edit size={16} />
                       </button>
-                      <button
-                        onClick={() => handleDelete(article)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded"
-                        title="Delete"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      
+                      {activeTab === 'Trashed' ? (
+                        <button
+                          onClick={() => handlePermanentDelete(article)}
+                          className="p-2 text-red-700 hover:bg-red-50 rounded"
+                          title="Delete Permanently"
+                        >
+                          <XCircle size={16} />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleTrash(article)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded"
+                          title="Move to Trash"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
