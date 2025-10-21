@@ -24,7 +24,6 @@ const AddNewPage = ({ onSubmit }) => {
   
     const success = await onSubmit(formData, 'Publish');
     if (success) {
-      alert('Article published successfully!');
       setFormData({ title: '', content: '', category: '' });
     } else {
       alert('Failed to publish article. Check console for details.');
@@ -39,7 +38,6 @@ const AddNewPage = ({ onSubmit }) => {
     
     const success = await onSubmit(formData, 'Draft');
     if (success) {
-      alert('Draft saved successfully!');
       setFormData({ title: '', content: '', category: '' });
     } else {
       alert('Failed to save draft. Check console for details.');

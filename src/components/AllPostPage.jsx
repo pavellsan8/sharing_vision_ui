@@ -22,7 +22,6 @@ const AllPostsPage = ({ articles, onTrash, onRefresh, onDelete }) => {
     if (window.confirm(`Permanently delete "${article.title}"? This cannot be undone!`)) {
       const success = await onDelete(article.id);
       if (success) {
-        alert('Article permanently deleted!');
         onRefresh();
       } else {
         alert('Failed to delete article.');
@@ -97,7 +96,7 @@ const AllPostsPage = ({ articles, onTrash, onRefresh, onDelete }) => {
                       >
                         <Edit size={16} />
                       </button>
-                      
+
                       {activeTab === 'Trashed' ? (
                         <button
                           onClick={() => handlePermanentDelete(article)}
